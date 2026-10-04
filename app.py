@@ -4,7 +4,6 @@ API Scheduler Backend v2
 Deploy free on Render.com → connect to the React dashboard
 """
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 import requests as http, sqlite3, json, os, random
@@ -171,19 +170,10 @@ class Config(BaseModel):
     schedule:  Dict[str, Any]
 
 # ─── Endpoints ────────────────────────────────────────────────────────────────
-
-# Smart health check — supports HEAD + GET
-# Returns 200 when scheduler is running (keeps server alive via UptimeRobot)
-# Returns 503 when idle (lets Render sleep to save free-tier resources)
 @app.head("/")
 @app.get("/")
 def root():
-    if state["running"]:
-        return {"app": "API Scheduler v2", "status": "ok", "scheduler": "running"}
-    return JSONResponse(
-        content={"app": "API Scheduler v2", "status": "idle"},
-        status_code=503
-    )
+    return {"app": "API Scheduler v2", "status": "ok"}
 
 @app.get("/status")
 def status():
